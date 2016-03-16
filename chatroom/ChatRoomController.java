@@ -1,8 +1,6 @@
 package chatroom;
 
 import java.io.*;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class ChatRoomController {
 	private ChatRoom model;
@@ -16,7 +14,7 @@ public class ChatRoomController {
 	
 	public void runChatRoom() throws IOException {
 		this.view.startChatRoom();
-
+		
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -24,6 +22,7 @@ public class ChatRoomController {
 					while (true)
 					{
 						model.addClient();
+						System.out.println("One client added in.");
 					}
 				} catch (IOException e) {
 					System.out.println(e);
@@ -31,12 +30,10 @@ public class ChatRoomController {
 
 			}
 		}).start();
-				
-		System.out.println("about to start thread 2");
-		
-		Thread message = new Thread(new Runnable() {
+						
+		new Thread(new Runnable() {
 				public void run() {
-					try {
+					System.out.println("very beginning of thread 2");
 						while (model.clientSockets.size() == 0)
 						{
 							try {
@@ -47,24 +44,22 @@ public class ChatRoomController {
 							}
 						}
 						System.out.println("starting thread 2");
-				        PrintWriter out =
-				                new PrintWriter(model.clientSockets.get(0).clientSocket.getOutputStream(), true);                   
-				       BufferedReader in = new BufferedReader(
-				                new InputStreamReader(model.clientSockets.get(0).clientSocket.getInputStream()));
-				       String inputLine;
-				       while ((inputLine = in.readLine()) != null) {
-				    	   out.println(inputLine);
-				           System.out.println("Client: " + inputLine);
-				       }
-					} catch (IOException e)
-					{
-						System.out.println(e);
-					}
+						
+						while (true)
+						{
+							try {
+								for (int i = 0; i < model.clientSockets.size(); i++)
+								{
+									model.receiveMessage(model.clientSockets.get(i));
+								}
+							} catch (IOException e)
+							{
+								e.printStackTrace();
+							}
+						}
+						
+
 				}
-			});
-		message.start();
-
-
-
+			}).start();
 	}
 }
