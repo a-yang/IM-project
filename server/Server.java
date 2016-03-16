@@ -7,20 +7,22 @@ import java.util.ArrayList;
 
 public class Server {
 	public ServerSocket serverSocket;
-	public ArrayList<Client> clientSockets;
-	Client newClient;
+	public ArrayList<Socket> clientSockets;
+	public ArrayList<String> messageHistoryQueue;
+	Socket newClient;
 	
 	public Server(Integer portNumber) throws IOException
 	{
 		serverSocket = new ServerSocket(portNumber);
-		clientSockets = new ArrayList<Client>();
+		clientSockets = new ArrayList<Socket>();
+		messageHistoryQueue = new ArrayList<String>();
 		
 		runChatRoom();
 	}
 	
 	public void addClient() throws IOException {
 		
-		newClient = new Client(serverSocket.accept());
+		newClient = serverSocket.accept();
 		clientSockets.add(newClient);
 	}
 	
@@ -38,7 +40,7 @@ public class Server {
 
 		for (int i = 0; i < clientSockets.size(); i++)
 		{
-			new PrintWriter(clientSockets.get(i).clientSocket.getOutputStream(), true).println(inputLine);
+			//new PrintWriter(clientSockets.get(i).clientSocket.getOutputStream(), true).println(inputLine);
 		}
 		System.out.println("Client: " + inputLine);
 
@@ -48,7 +50,7 @@ public class Server {
 		startChatRoom();
 
 						
-		new Thread(new Runnable() {
+/*		new Thread(new Runnable() {
 			public void run() {
 
 					while (clientSockets.size() == 0)
@@ -75,14 +77,16 @@ public class Server {
 					}
 
 			}
-		}).start();
+		}).start();*/
 		
 		try {
 			System.out.println("starting thread 1");
 			while (true)
 			{
-				addClient();
+				Socket socket = serverSocket.accept();
+				clientSockets.add(socket);
 				System.out.println("One client added in.");
+				new SocketThread(socket, this).start();
 			}
 		} catch (IOException e) {
 			System.out.println(e);
