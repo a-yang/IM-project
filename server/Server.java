@@ -1,44 +1,97 @@
 package server;
 
-import java.io.*;
-import chatroom.*;
-import java.util.Scanner;
 import client.*;
+import java.net.*;
+import java.io.*;
+import java.util.ArrayList;
 
 public class Server {
-	//server class
-	//x2
-	public static void main(String[] args) throws IOException {
+	public ServerSocket serverSocket;
+	public ArrayList<Client> clientSockets;
+	Client newClient;
+	
+	public Server(Integer portNumber) throws IOException
+	{
+		serverSocket = new ServerSocket(portNumber);
+		clientSockets = new ArrayList<Client>();
 		
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Start a chatroom or join one (s/j)");
-		String choice = scanner.next();
+		runChatRoom();
+	}
+	
+	public void addClient() throws IOException {
 		
-		if (choice.equals("s")) {
-            System.out.println("Enter port number: ");
-            Integer port = scanner.nextInt(); 
-            scanner.close();
-            
-    		chatroom.ChatRoom chat = new ChatRoom(port);
-    		chatroom.ChatRoomView chatView = new ChatRoomView();
-    		chatroom.ChatRoomController controller =
-    				new ChatRoomController(chat, chatView);
-    		
-    		//Client host = new Client ("localhost", port);
+		newClient = new Client(serverSocket.accept());
+		clientSockets.add(newClient);
+	}
+	
+	public void receiveMessage(Client c) throws IOException {
+		BufferedReader in = new BufferedReader(
+	                new InputStreamReader(c.clientSocket.getInputStream()));
+		if (in.ready()) {
+			sendMessage(in.readLine());
 		}
-		else if (choice.equals("j"))
+	}
+	
+	public void sendMessage(String inputLine) throws IOException {
+                 
+		System.out.println("in send message");
+
+		for (int i = 0; i < clientSockets.size(); i++)
 		{
-			System.out.println("Enter host name: ");
-			String hostName = scanner.next();
-			System.out.println("Enter port number: ");
-			Integer port = scanner.nextInt();
-			System.out.println("Pick a username: ");
-			String userName = scanner.next();
-			Client client = new Client(hostName, port, userName);
+			new PrintWriter(clientSockets.get(i).clientSocket.getOutputStream(), true).println(inputLine);
 		}
-		else
-		{
-			System.out.println("Invalid choice");
+		System.out.println("Client: " + inputLine);
+
+	}
+	
+	public void runChatRoom() throws IOException {
+		startChatRoom();
+
+						
+		new Thread(new Runnable() {
+			public void run() {
+
+					while (clientSockets.size() == 0)
+					{
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e)
+						{
+							//nothing?
+						}
+					}
+					System.out.println("starting thread 2");
+					try {
+						while (true)
+						{
+							for (int i = 0; i < clientSockets.size(); i++)
+							{
+								receiveMessage(clientSockets.get(i));
+							}
+						}
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+
+			}
+		}).start();
+		
+		try {
+			System.out.println("starting thread 1");
+			while (true)
+			{
+				addClient();
+				System.out.println("One client added in.");
+			}
+		} catch (IOException e) {
+			System.out.println(e);
 		}
+	}
+	
+	
+	public void startChatRoom() {
+		System.out.println("Initializing chat room....");
+		System.out.println("Waiting for clients....");
 	}
 }
