@@ -15,30 +15,25 @@ public class Server {
 		String choice = scanner.next();
 		
 		if (choice.equals("s")) {
-            System.out.print("Enter port number: ");
+            System.out.println("Enter port number: ");
             Integer port = scanner.nextInt(); 
-            
-            System.out.print("Pick a username: ");
-            String userName = scanner.next();
             scanner.close();
-
             
     		chatroom.ChatRoom chat = new ChatRoom(port);
     		chatroom.ChatRoomView chatView = new ChatRoomView();
     		chatroom.ChatRoomController controller =
     				new ChatRoomController(chat, chatView);
     		
-    		//Client host = new Client ("localhost", port, userName);
+    		//Client host = new Client ("localhost", port);
 		}
 		else if (choice.equals("j"))
 		{
-			System.out.print("Enter host name: ");
+			System.out.println("Enter host name: ");
 			String hostName = scanner.next();
-			System.out.print("Enter port number: ");
+			System.out.println("Enter port number: ");
 			Integer port = scanner.nextInt();
-			System.out.print("Pick a username: ");
+			System.out.println("Pick a username: ");
 			String userName = scanner.next();
-			scanner.close();
 			Client client = new Client(hostName, port, userName);
 		}
 		else

@@ -23,7 +23,6 @@ public class ChatRoom {
 	}
 	
 	public void receiveMessage(Client c) throws IOException {
-		//System.out.println("server.receiveMessage");
 		BufferedReader in = new BufferedReader(
 	                new InputStreamReader(c.clientSocket.getInputStream()));
 		if (in.ready()) {
@@ -33,7 +32,7 @@ public class ChatRoom {
 	
 	public void sendMessage(String inputLine) throws IOException {
                  
-		//System.out.println("server.sendMessage");
+		System.out.println("in send message");
 
 		for (int i = 0; i < clientSockets.size(); i++)
 		{

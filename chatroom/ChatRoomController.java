@@ -33,7 +33,7 @@ public class ChatRoomController {
 						
 		new Thread(new Runnable() {
 				public void run() {
-					System.out.println("very beginning of thread 2");
+
 						while (model.clientSockets.size() == 0)
 						{
 							try {
@@ -44,22 +44,22 @@ public class ChatRoomController {
 							}
 						}
 						System.out.println("starting thread 2");
-						
-						while (true)
-						{
-							try {
+						try {
+							while (true)
+							{
 								for (int i = 0; i < model.clientSockets.size(); i++)
 								{
 									model.receiveMessage(model.clientSockets.get(i));
 								}
-							} catch (IOException e)
-							{
-								e.printStackTrace();
 							}
+						} catch (IOException e)
+						{
+							e.printStackTrace();
 						}
-						
 
 				}
 			}).start();
 	}
+	
+
 }
