@@ -10,8 +10,11 @@ import java.awt.Color;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,16 +27,212 @@ public class ChatRoomView extends JFrame {
 
     JLabel statusbar;
     JPanel panel;
+    ChatRoomController c;
+    JTextArea port;
+    JTextArea username;
+    JTextArea host;
     JTextArea chatMessages;
     JTextField typeMessageBox;
 
+    public ChatRoomView(ChatRoomController cc) {
+    	Color blue = new Color(100,149,237);
+    	c = cc;
+        initUI();
+        panel.setBackground(blue);
+    }
+
+    public final void initUI() {
+
+        panel = new JPanel();
+        statusbar = new JLabel("Welcome!");
+
+
+        panel.setLayout(null);
+
+        // Initialize buttons
+        JButton host = new JButton("Host a Chat");
+        JButton join = new JButton("Join a Chat");
+
+        
+        // Set button borders
+        host.setBounds(125, 90, 150, 25);
+        join.setBounds(125, 140, 150, 25);
+       
+
+  
+        // Add action listeners to the buttons
+        host.addActionListener(new ActionListener(){
+   	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.ButtonListenerHost();			
+			}
+        });
+        join.addActionListener(new ActionListener(){
+        	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				c.ButtonListenerJoin();			
+			}
+        });
+
+        // Add buttons to panel
+        panel.add(host);
+        panel.add(join);
+       
+
+        // Add panel to JFrame
+        add(panel);
+        add(statusbar, BorderLayout.SOUTH);
+
+        setTitle("Advanced Programming Chat");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        setVisible(true);
+    }
+    
+    public void HostView(final ChatRoomController b){
+    	
+    	panel.removeAll();
+    	panel.updateUI();
+    
+
+    	port = new JTextArea("Port Number");
+    	port.setBounds(125, 60, 150, 25);
+    
+    	
+    	username = new JTextArea("User Name");    	
+    	username.setBounds(125, 90, 150, 25);	
+  
+    	  port.addMouseListener(new MouseAdapter(){
+              @Override
+              public void mouseClicked(MouseEvent e){
+                  port.setText("");
+              }
+          });
+    	  username.addMouseListener(new MouseAdapter(){
+              @Override
+              public void mouseClicked(MouseEvent e){
+                  username.setText("");
+              }
+          });
+    	
+    	 
+    	JButton start = new JButton("Start Chat");
+    	start.setBounds(125, 140, 150, 25);
+        start.addActionListener(new ActionListener(){
+           	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String realPort = port.getText();
+				b.setInfo("localhost", Integer.parseInt(realPort), username.getText());
+				b.ButtonListenerStart();	
+				statusbar.setText("Started Chat as " + username.getText());
+			}
+        });
+    	
+        // Add buttons to panel
+        panel.add(start);
+        panel.add(port);
+        panel.add(username);       
+
+        // Add panel to JFrame
+        add(panel);
+        add(statusbar, BorderLayout.SOUTH);
+
+        setTitle("Advanced Programming Chat");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        setVisible(true);
+    	
+    }
+    
+    public void JoinView(final ChatRoomController b){
+    	//textbox port number
+    	//textbox host
+    	//textbox username
+    	
+    	panel.removeAll();
+    	panel.updateUI();
+    	
+    	port = new JTextArea("Port Number");
+    	port.setBounds(125, 50, 150, 25);
+    
+    	host = new JTextArea("Host Name");
+    	host.setBounds(125, 80, 150, 25);
+    	
+    	username = new JTextArea("User Name");    	
+    	username.setBounds(125, 110, 150, 25);
+    	
+    	  port.addMouseListener(new MouseAdapter(){
+              @Override
+              public void mouseClicked(MouseEvent e){
+                  port.setText("");
+              }
+          });
+    	  username.addMouseListener(new MouseAdapter(){
+              @Override
+              public void mouseClicked(MouseEvent e){
+                  username.setText("");
+              }
+          });
+    	  
+    	  host.addMouseListener(new MouseAdapter(){
+    		  @Override
+    		  public void mouseClicked(MouseEvent e){
+    			  host.setText("");
+    		  }
+    	  });
+    	
+    	JButton join = new JButton("Join Chat");
+    	join.setBounds(125, 160, 150, 25);   
+        join.addActionListener(new ActionListener(){
+           	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String realPort = port.getText();
+				
+				b.setInfo(host.getText(), Integer.parseInt(realPort), username.getText());
+				b.ButtonListenerJoinC();	
+				statusbar.setText("Joined Chat as " + username.getText());
+			}
+        });
+    	
+    	
+        // Add buttons to panel
+        panel.add(join);
+        panel.add(port);
+        panel.add(username);  
+        panel.add(host);
+
+        // Add panel to JFrame
+        add(panel);
+        add(statusbar, BorderLayout.SOUTH);
+
+        setTitle("Advanced Programming Chat");
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        setVisible(true);
+    	
+    }
+    
     public ChatRoomView() {
     	//chatRoom();
         
     }
     
-    public void chatRoom(ActionListener sendButtonListener) {
-    	panel = new JPanel();
+    public void chatRoom(final ChatRoomController b) {
+    	
+    	panel.removeAll();
+    	panel.updateUI();
+    	
+    	//panel = new JPanel();
     	panel.setLayout(new GridBagLayout());
     	
     	
@@ -59,8 +258,16 @@ public class ChatRoomView extends JFrame {
          c.gridwidth = 700;
          panel.add(typeMessageBox, c);
          
+         Action action = new AbstractAction(){
+        	 @Override
+        	 public void actionPerformed(ActionEvent e){
+        		 b.getSendButtonListener();
+        	 }
+         };
+         
          JButton sendMessage = new JButton("Send");
-         sendMessage.addActionListener(sendButtonListener);
+         sendMessage.addActionListener(action);
+         typeMessageBox.addActionListener(action);
          c.gridx = GridBagConstraints.RELATIVE;
          c.weightx = 0;
          panel.add(sendMessage, c);
@@ -68,7 +275,7 @@ public class ChatRoomView extends JFrame {
     	add(panel);
     	
     	
-        setTitle("Advanced Programming IM Chatroom");
+        setTitle("Advanced Programming Chat");
         setSize(1000, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

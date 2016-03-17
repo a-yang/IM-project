@@ -5,103 +5,95 @@ import java.util.Scanner;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 
 public class ChatRoomController {
-	ChatRoomView view;
-	Client model;
-	
-	public ChatRoomController(ChatRoomView view)
-	{
-		this.view = view;
+		public int port;
+		public String host = "localhost";
+		public String username;
+		public ChatRoomView view;
 		
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Start a chatroom or join one (s/j)");
-		String choice = scanner.next();
-		
-		if (choice.equals("s")) {
-            System.out.print("Enter port number: ");
-            final Integer port = scanner.nextInt(); 
-            
-            System.out.print("Pick a username: ");
-            final String userName = scanner.next();
-            //scanner.close();
-            
-            new Thread(new Runnable() {
-            	public void run() {
-            		try {
-                		server.Server chat = new server.Server(port);
-            		} catch (IOException e) {
-            			e.printStackTrace();
-            		}
-            	}
-            }).start();
-    		
-            new Thread(new Runnable() {
-            	public void run() {
-                	System.out.println("Starting host client");
-                	model = new Client ("localhost", port, userName);
-            	}
-            }).start();
-
-
+		public ChatRoomController(){
+			view = new ChatRoomView(this);
 		}
-		else if (choice.equals("j"))
-		{
-			System.out.print("Enter host name: ");
-			final String hostName = scanner.next();
-			System.out.print("Enter port number: ");
-			final Integer port = scanner.nextInt();
-			System.out.print("Pick a username: ");
-			final String userName = scanner.next();
+		
+		public ChatRoomController(ChatRoomView view){
+		    view = view;
+	
+		} 
+		public void ButtonListenerHost(){
+			view.HostView(this);
+		}
+	    public void ButtonListenerStart(){
+	            new Thread(new Runnable() {
+	            	public void run() {
+	            		try {
+	                		server.Server chat = new server.Server(port);
+	            		} catch (IOException e) {
+	            			e.printStackTrace();
+	            		}
+	            	}
+	            }).start();
+	    		
+	            new Thread(new Runnable() {
+	            	public void run() {
+	            		Client chatHost = new Client (host, port, username);
+	            	}
+	            }).start();
+	            startSystem();
 			
-			new Thread(new Runnable() {
-				public void run() {
-					model = new Client(hostName, port, userName);
-				}
-			}).start();
-		}
-		else
-		{
-			System.out.println("Invalid choice");
+		}    
+	    
+		public void ButtonListenerJoin(){
+	        view.JoinView(this);		
+	    }
+		
+		public void ButtonListenerJoinC(){
+			   new Thread(new Runnable() {
+	            	public void run() {
+	            		Client client = new Client (host, port, username);
+	            	}
+	            }).start();
+	            startSystem();
+			
 		}
 		
+		public void startSystem() {
+			view.chatRoom(this);
+			redirectOutput();
+		}
 		
-		startSystem();
-	}
+		public void getSendButtonListener() {
+			
+					view.sendMessage();
+			
+		}
+		
+		private void redirectOutput() {
+			  OutputStream outPut = new OutputStream() {
+			    @Override
+			    public void write(final int byteString) throws IOException {
+			      view.newMessage(String.valueOf((char) byteString));
+			    }
+			 
+			    @Override
+			    public void write(byte[] byteString, int off, int len) throws IOException {
+			      view.newMessage(new String(byteString, off, len));
+			    }
+			 
+			    @Override
+			    public void write(byte[] byteString) throws IOException {
+			      write(byteString, 0, byteString.length);
+			    }
+			  };
+			  System.setOut(new PrintStream(outPut, true));
+			  System.setErr(new PrintStream(outPut, true));
+		}
+		
+		public void setInfo(String hostName, int portNumber, String name) {
+			host = hostName;
+			port = portNumber;
+			username = name;
+		}
 	
-	public void startSystem() {
-		view.chatRoom(getSendButtonListener());
-		redirectOutput();
 	}
-	
-	ActionListener getSendButtonListener() {
-		return new ActionListener() {
-			@Override public void actionPerformed (ActionEvent e) {
-				view.sendMessage();
-			}
-		};
-	}
-	
-	private void redirectOutput() {
-		  OutputStream outPut = new OutputStream() {
-		    @Override
-		    public void write(final int byteString) throws IOException {
-		      view.newMessage(String.valueOf((char) byteString));
-		    }
-		 
-		    @Override
-		    public void write(byte[] byteString, int off, int len) throws IOException {
-		      view.newMessage(new String(byteString, off, len));
-		    }
-		 
-		    @Override
-		    public void write(byte[] byteString) throws IOException {
-		      write(byteString, 0, byteString.length);
-		    }
-		  };
-		  System.setOut(new PrintStream(outPut, true));
-		  System.setErr(new PrintStream(outPut, true));
-	}
-}
