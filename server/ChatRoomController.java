@@ -3,6 +3,11 @@ package server;
 import java.io.*;
 import java.util.Scanner;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+
 public class ChatRoomController {
 	ChatRoomView view;
 	Client model;
@@ -67,28 +72,36 @@ public class ChatRoomController {
 	}
 	
 	public void startSystem() {
-		view.chatRoom();
+		view.chatRoom(getSendButtonListener());
 		redirectOutput();
 	}
 	
+	ActionListener getSendButtonListener() {
+		return new ActionListener() {
+			@Override public void actionPerformed (ActionEvent e) {
+				view.sendMessage();
+			}
+		};
+	}
+	
 	private void redirectOutput() {
-		  OutputStream out = new OutputStream() {
+		  OutputStream outPut = new OutputStream() {
 		    @Override
-		    public void write(final int b) throws IOException {
-		      view.updateTextPane(String.valueOf((char) b));
+		    public void write(final int byteString) throws IOException {
+		      view.newMessage(String.valueOf((char) byteString));
 		    }
 		 
 		    @Override
-		    public void write(byte[] b, int off, int len) throws IOException {
-		      view.updateTextPane(new String(b, off, len));
+		    public void write(byte[] byteString, int off, int len) throws IOException {
+		      view.newMessage(new String(byteString, off, len));
 		    }
 		 
 		    @Override
-		    public void write(byte[] b) throws IOException {
-		      write(b, 0, b.length);
+		    public void write(byte[] byteString) throws IOException {
+		      write(byteString, 0, byteString.length);
 		    }
 		  };
-		  System.setOut(new PrintStream(out, true));
-		  System.setErr(new PrintStream(out, true));
+		  System.setOut(new PrintStream(outPut, true));
+		  System.setErr(new PrintStream(outPut, true));
 	}
 }

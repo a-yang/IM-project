@@ -26,17 +26,21 @@ public class Client {
     				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                     BufferedReader in = new BufferedReader(
                     		new InputStreamReader(clientSocket.getInputStream()));
-                    BufferedReader stdIn = new BufferedReader(
-                            new InputStreamReader(System.in))
+
                 ) {
                     String userInput;
                     while (true) {
                     	if (in.ready()) {
                             System.out.println(in.readLine());
                     	}
-                    	if (stdIn.ready()){
-                        	userInput = stdIn.readLine();
-                            out.println(userName + ": " + userInput);
+                    	if (System.in.available() != 0){
+                        	ByteArrayOutputStream o = new ByteArrayOutputStream();
+                        	while (System.in.available() != 0) {
+                        		o.write(System.in.read());
+                        	}
+                        	byte b[] = o.toByteArray();
+                    		String byteArray = new String(b);
+                    		out.println(userName + ": " + byteArray);
                     	}
 
                     }
