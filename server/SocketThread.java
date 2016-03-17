@@ -25,7 +25,6 @@ public class SocketThread extends Thread{
 					BufferedReader in = new BufferedReader(
 			                new InputStreamReader(socket.getInputStream()));
 					if (in.ready()) {
-						//sendMessage(in.readLine());
 						server.messageHistoryQueue.add(in.readLine());
 					}
 					

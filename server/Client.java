@@ -1,4 +1,4 @@
-package client;
+package server;
 
 import java.io.*;
 import java.net.*;
@@ -6,12 +6,6 @@ import java.net.*;
 public class Client {
 	public Socket clientSocket;
 	String userName;
-	
-	public Client(Socket connection)
-	{
-		userName = "<null>";
-		clientSocket = connection;
-	}
 	
 	public Client(String hostName, Integer portNumber, String userName)
 	{
