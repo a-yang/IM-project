@@ -22,12 +22,10 @@ public class Server {
 	
 	public void runChatRoom() throws IOException {		
 		try {
-			System.out.println("starting thread 1");
 			while (true)
 			{
 				Socket socket = serverSocket.accept();
 				clientSockets.add(socket);
-				System.out.println("One client added in.");
 				new SocketThread(socket, this).start();
 			}
 		} catch (IOException e) {

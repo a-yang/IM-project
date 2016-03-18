@@ -19,7 +19,6 @@ public class SocketThread extends Thread{
 	  
 	  public void run() {
 		  try {
-			  System.out.println("Starting socketthread");
 				while (true)
 				{
 					BufferedReader in = new BufferedReader(

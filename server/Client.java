@@ -12,7 +12,12 @@ public class Client {
 		try {
 			this.userName = userName;
 			clientSocket = new Socket(hostName, portNumber);
-			runChat();
+			
+			new Thread(new Runnable() {
+				public void run() {
+					runChat();
+				}
+			}).start();
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -28,6 +33,7 @@ public class Client {
                     		new InputStreamReader(clientSocket.getInputStream()));
 
                 ) {
+    				out.println(userName + " joined the chat.");
                     String userInput;
                     while (true) {
                     	if (in.ready()) {
@@ -51,6 +57,28 @@ public class Client {
                     System.err.println("Couldn't get I/O for the connection");
                     System.exit(1);
                 } 
+	}
+	
+	public void sendFile(String fileName) {
+		try {
+	        File f=new File(fileName); 
+			if(f.exists()) { 
+		            BufferedInputStream d=new BufferedInputStream(new FileInputStream(fileName));
+		            BufferedOutputStream outStream = new BufferedOutputStream(clientSocket.getOutputStream());
+		            byte buffer[] = new byte[1024];
+		            int read;
+		            while((read = d.read(buffer))!=-1)
+		            {
+		                outStream.write(buffer, 0, read);
+		                outStream.flush();
+		            }
+			}
+	        
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

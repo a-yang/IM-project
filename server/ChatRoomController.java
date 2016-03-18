@@ -7,11 +7,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
+import javax.swing.JButton;
+
+import javax.swing.JButton;
+
 public class ChatRoomController {
 		public int port;
-		public String host = "localhost";
+		public String host;
 		public String username;
 		public ChatRoomView view;
+		public String fileName;
+		Client client;
 		
 		public ChatRoomController(){
 			view = new ChatRoomView(this);
@@ -35,11 +41,8 @@ public class ChatRoomController {
 	            	}
 	            }).start();
 	    		
-	            new Thread(new Runnable() {
-	            	public void run() {
-	            		Client chatHost = new Client (host, port, username);
-	            	}
-	            }).start();
+
+	            		client = new Client ("localhost", port, username);
 	            startSystem();
 			
 		}    
@@ -51,7 +54,7 @@ public class ChatRoomController {
 		public void ButtonListenerJoinC(){
 			   new Thread(new Runnable() {
 	            	public void run() {
-	            		Client client = new Client (host, port, username);
+	            		client = new Client (host, port, username);
 	            	}
 	            }).start();
 	            startSystem();
@@ -65,8 +68,17 @@ public class ChatRoomController {
 		
 		public void getSendButtonListener() {
 			
-					view.sendMessage();
+			view.sendMessage();
 			
+		}
+	
+		
+		public void readFileListener(final String fileName){			
+			new Thread(new Runnable() {
+				public void run() {
+					client.sendFile(fileName);
+				}
+			}).start();
 		}
 		
 		private void redirectOutput() {
@@ -89,11 +101,13 @@ public class ChatRoomController {
 			  System.setOut(new PrintStream(outPut, true));
 			  System.setErr(new PrintStream(outPut, true));
 		}
-		
 		public void setInfo(String hostName, int portNumber, String name) {
 			host = hostName;
 			port = portNumber;
 			username = name;
 		}
+		public void setInfo(String file) {
+			fileName = file;
+		}
 	
-	}
+	}	

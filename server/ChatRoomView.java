@@ -33,7 +33,10 @@ public class ChatRoomView extends JFrame {
     JTextArea host;
     JTextArea chatMessages;
     JTextField typeMessageBox;
-
+    JTextArea fileName;
+    JTextField fileMessageBox;
+ 
+    
     public ChatRoomView(ChatRoomController cc) {
     	Color blue = new Color(100,149,237);
     	c = cc;
@@ -106,18 +109,34 @@ public class ChatRoomView extends JFrame {
     	username = new JTextArea("User Name");    	
     	username.setBounds(125, 90, 150, 25);	
   
+    	 Boolean portclicked = false;
+    	 Boolean userclicked = false;
+    	
+    	if(portclicked.booleanValue() == false){
     	  port.addMouseListener(new MouseAdapter(){
               @Override
               public void mouseClicked(MouseEvent e){
+        
                   port.setText("");
+            	  
               }
           });
+    	  portclicked = true;
+    	}
+    	if (userclicked.booleanValue() == false){
+    		
     	  username.addMouseListener(new MouseAdapter(){
               @Override
               public void mouseClicked(MouseEvent e){
+            	 
                   username.setText("");
-              }
+                  
+            	  }            	  	
+               
           });
+    	  userclicked = true;
+    	}
+    	
     	
     	 
     	JButton start = new JButton("Start Chat");
@@ -167,26 +186,37 @@ public class ChatRoomView extends JFrame {
     	
     	username = new JTextArea("User Name");    	
     	username.setBounds(125, 110, 150, 25);
+    	Boolean portclicked = false;
+    	Boolean userclicked = false;
+    	Boolean hostclicked = false;
     	
+    	if(portclicked.booleanValue() == false){
     	  port.addMouseListener(new MouseAdapter(){
               @Override
               public void mouseClicked(MouseEvent e){
                   port.setText("");
               }
           });
+    	  portclicked = true;
+    	}
+    	if (userclicked.booleanValue() == false){
     	  username.addMouseListener(new MouseAdapter(){
               @Override
               public void mouseClicked(MouseEvent e){
                   username.setText("");
               }
           });
-    	  
+    	  userclicked = true;
+    	}  
+    	if (hostclicked.booleanValue() == false){
     	  host.addMouseListener(new MouseAdapter(){
     		  @Override
     		  public void mouseClicked(MouseEvent e){
     			  host.setText("");
     		  }
     	  });
+    	  hostclicked = true;
+    	}
     	
     	JButton join = new JButton("Join Chat");
     	join.setBounds(125, 160, 150, 25);   
@@ -251,6 +281,7 @@ public class ChatRoomView extends JFrame {
          c.weighty = 1;
          panel.add(scrollPane, c);
          
+  
          typeMessageBox = new JTextField();
          c.gridx = 0;
          c.weightx = .8;
@@ -262,17 +293,47 @@ public class ChatRoomView extends JFrame {
         	 @Override
         	 public void actionPerformed(ActionEvent e){
         		 b.getSendButtonListener();
+        		
+        	 }
+         };
+         Action action1 = new AbstractAction(){
+        	 @Override
+        	 public void actionPerformed(ActionEvent e){
+        		 String fileName = fileMessageBox.getText();
+        		 b.readFileListener(fileName);
+        		
         	 }
          };
          
          JButton sendMessage = new JButton("Send");
          sendMessage.addActionListener(action);
          typeMessageBox.addActionListener(action);
+         
          c.gridx = GridBagConstraints.RELATIVE;
          c.weightx = 0;
          panel.add(sendMessage, c);
          
-    	add(panel);
+
+         fileMessageBox = new JTextField("File Path");
+         c.gridx = 0;
+         c.gridy =2;
+         c.weightx = .8;
+         c.weighty = 0;
+         c.gridwidth = 675;
+         panel.add(fileMessageBox, c);
+         
+         JButton uploadFile = new JButton("Upload");
+         c.gridy = 2;
+         c.gridx = GridBagConstraints.RELATIVE;
+         c.weightx = 0;
+         c.insets = new Insets(20,5,20,20);
+         
+         uploadFile.addActionListener(action1);
+         
+         panel.add(uploadFile, c);
+               
+
+         add(panel);
     	
     	
         setTitle("Advanced Programming Chat");
@@ -293,4 +354,33 @@ public class ChatRoomView extends JFrame {
     	typeMessageBox.setText("");
 
     }
+    void sendFile(){
+    	
+//    	String message = typeMessageBox.getText();
+//    	InputStream toSocket = new ByteArrayInputStream(message.getBytes());
+//    	System.setIn(toSocket);
+//    	typeMessageBox.setText("");
+//    	
+//    	
+//    	String file = fileMessageBox.getText();
+//    	File fileToSend = new File(fileMessageBox.getText());
+//    	byte[] myByteArray = new byte[(int) fileToSend.length()];
+//    	FileOutputStream fileStream = null;
+//    	try{
+//    		fileStream = new FileOutputStream(fileToSend);
+//    	}catch(FileNotFoundException e){
+//    		//error
+//    	}
+//    	BufferedOutputStream bufferedStream = new BufferedOutputStream(fileStream); 
+//    	try{
+//    		bufferedStream.read(myByteArray, 0, myByteArray.length);
+//    	}catch(IOException e){
+//    		//
+//    	}
+//    	InputStream toSocket = new ByteArrayInputStream(file.getBytes());
+//    	System.setIn(toSocket);
+//    	fileMessageBox.setText("");
+    	
+    }
+
 }
