@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -27,7 +28,7 @@ public class ChatRoomView extends JFrame {
 
     JLabel statusbar;
     JPanel panel;
-    ChatRoomController c;
+    ChatRoomController controller;
     JTextArea port;
     JTextArea username;
     JTextArea host;
@@ -39,7 +40,7 @@ public class ChatRoomView extends JFrame {
     
     public ChatRoomView(ChatRoomController cc) {
     	Color blue = new Color(100,149,237);
-    	c = cc;
+    	controller = cc;
         initUI();
         panel.setBackground(blue);
     }
@@ -68,14 +69,14 @@ public class ChatRoomView extends JFrame {
    	
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.ButtonListenerHost();			
+				controller.ButtonListenerHost();			
 			}
         });
         join.addActionListener(new ActionListener(){
         	
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				c.ButtonListenerJoin();			
+				controller.ButtonListenerJoin();			
 			}
         });
 
@@ -301,6 +302,7 @@ public class ChatRoomView extends JFrame {
         	 public void actionPerformed(ActionEvent e){
         		 String fileName = fileMessageBox.getText();
         		 b.readFileListener(fileName);
+        		 fileMessageBox.setText("");
         		
         	 }
          };
@@ -328,6 +330,14 @@ public class ChatRoomView extends JFrame {
          c.weightx = 0;
          c.insets = new Insets(20,5,20,20);
          
+         fileMessageBox.addMouseListener(new MouseAdapter(){
+      		  @Override
+      		  public void mouseClicked(MouseEvent e){
+      			  fileMessageBox.setText("");
+      		  }
+            });
+         
+         fileMessageBox.addActionListener(action1);
          uploadFile.addActionListener(action1);
          
          panel.add(uploadFile, c);
@@ -339,8 +349,17 @@ public class ChatRoomView extends JFrame {
         setTitle("Advanced Programming Chat");
         setSize(1000, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(HIDE_ON_CLOSE);
     	setVisible(true);
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent e) {
+            	System.out.println("called");
+                controller.closeServer();
+                dispose();
+                System.exit(0);
+            }
+        });
     }
     
     void newMessage(String message) {
@@ -382,5 +401,6 @@ public class ChatRoomView extends JFrame {
 //    	fileMessageBox.setText("");
     	
     }
+    
 
 }

@@ -36,8 +36,33 @@ public class Client {
     				out.println(userName + " joined the chat.");
                     String userInput;
                     while (true) {
+
+                    	
                     	if (in.ready()) {
-                            System.out.println(in.readLine());
+                    		
+                    		String inputLine = in.readLine();
+    						/*Boolean firstLine = true;
+    						Boolean isImage = false;
+    						while (in.ready()) {
+    							if (!firstLine && !isImage) {
+    								inputLine += "\n";
+    							}
+    							inputLine += in.readLine();
+    							if (firstLine) {
+    								byte bytes[] = inputLine.getBytes();
+    								if (bytes[0] == 0xEF && bytes[1] == 0xBF) {
+    									isImage = true;
+    								}
+    							}
+    							firstLine = false;
+
+    						}
+    						byte bytes[] = inputLine.getBytes();
+    						System.out.println("first 4 bytes");
+    						for (int i = 0;i < 4; i++) {
+    							System.out.println(bytes[i] & 0xff);
+    						}*/
+                            System.out.println(inputLine);
                     	}
                     	if (System.in.available() != 0){
                         	ByteArrayOutputStream o = new ByteArrayOutputStream();
@@ -46,8 +71,15 @@ public class Client {
                         	}
                         	byte b[] = o.toByteArray();
                     		String byteArray = new String(b);
+                        	/*if (out.checkError()){
+                        		System.out.println("Host has left.");
+                        		break;
+                        	}*/
                     		out.println(userName + ": " + byteArray);
+
                     	}
+                    	
+
 
                     }
                 } catch (UnknownHostException e) {
@@ -65,8 +97,11 @@ public class Client {
 			if(f.exists()) { 
 		            BufferedInputStream d=new BufferedInputStream(new FileInputStream(fileName));
 		            BufferedOutputStream outStream = new BufferedOutputStream(clientSocket.getOutputStream());
-		            byte buffer[] = new byte[1024];
+		            byte buffer[] = new byte[(int) f.length()];
 		            int read;
+		            String intro = userName + " sent " + fileName + ": \n";
+		            outStream.write(intro.getBytes());
+		            outStream.flush();
 		            while((read = d.read(buffer))!=-1)
 		            {
 		                outStream.write(buffer, 0, read);

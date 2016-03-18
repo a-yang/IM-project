@@ -11,13 +11,22 @@ public class Server {
 	public ArrayList<String> messageHistoryQueue;
 	Socket newClient;
 	
-	public Server(Integer portNumber) throws IOException
+	public Server(final Integer portNumber) throws IOException
 	{
-		serverSocket = new ServerSocket(portNumber);
-		clientSockets = new ArrayList<Socket>();
-		messageHistoryQueue = new ArrayList<String>();
-		
-		runChatRoom();
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+				serverSocket = new ServerSocket(portNumber);
+				clientSockets = new ArrayList<Socket>();
+				messageHistoryQueue = new ArrayList<String>();
+				
+				runChatRoom();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+
 	}
 	
 	public void runChatRoom() throws IOException {		
@@ -30,6 +39,18 @@ public class Server {
 			}
 		} catch (IOException e) {
 			System.out.println(e);
+		}
+	}
+	
+	public void close() {
+		try {
+		for (int i = 0; i < clientSockets.size(); i++) {
+			BufferedReader in = new BufferedReader(
+	                new InputStreamReader(clientSockets.get(i).getInputStream()));
+			new PrintWriter(clientSockets.get(i).getOutputStream(), true).println("Host has left.");
+		}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

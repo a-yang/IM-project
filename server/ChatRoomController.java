@@ -18,6 +18,8 @@ public class ChatRoomController {
 		public ChatRoomView view;
 		public String fileName;
 		Client client;
+		Boolean isHost = false;
+		Server server;
 		
 		public ChatRoomController(){
 			view = new ChatRoomView(this);
@@ -31,15 +33,13 @@ public class ChatRoomController {
 			view.HostView(this);
 		}
 	    public void ButtonListenerStart(){
-	            new Thread(new Runnable() {
-	            	public void run() {
+
 	            		try {
-	                		server.Server chat = new server.Server(port);
+	            			isHost = true;
+	                		server = new server.Server(port);
 	            		} catch (IOException e) {
 	            			e.printStackTrace();
 	            		}
-	            	}
-	            }).start();
 	    		
 
 	            		client = new Client ("localhost", port, username);
@@ -52,11 +52,8 @@ public class ChatRoomController {
 	    }
 		
 		public void ButtonListenerJoinC(){
-			   new Thread(new Runnable() {
-	            	public void run() {
 	            		client = new Client (host, port, username);
-	            	}
-	            }).start();
+
 	            startSystem();
 			
 		}
@@ -108,6 +105,13 @@ public class ChatRoomController {
 		}
 		public void setInfo(String file) {
 			fileName = file;
+		}
+		
+		public void closeServer() {
+			if (isHost) {
+				System.out.println("is host");
+				server.close();
+			}
 		}
 	
 	}	
