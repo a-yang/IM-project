@@ -34,16 +34,16 @@ public class ChatRoomController {
 		}
 	    public void ButtonListenerStart(){
 
-	            		try {
-	            			isHost = true;
-	                		server = new server.Server(port);
-	            		} catch (IOException e) {
-	            			e.printStackTrace();
-	            		}
+    		try {
+    			isHost = true;
+        		server = new server.Server(port);
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
 	    		
 
-	            		client = new Client ("localhost", port, username);
-	            startSystem();
+	        client = new Client ("localhost", port, username);
+	        startSystem();
 			
 		}    
 	    
@@ -52,10 +52,9 @@ public class ChatRoomController {
 	    }
 		
 		public void ButtonListenerJoinC(){
-	            		client = new Client (host, port, username);
+			client = new Client (host, port, username);
 
-	            startSystem();
-			
+			startSystem();
 		}
 		
 		public void startSystem() {
@@ -64,9 +63,7 @@ public class ChatRoomController {
 		}
 		
 		public void getSendButtonListener() {
-			
 			view.sendMessage();
-			
 		}
 	
 		
@@ -79,32 +76,30 @@ public class ChatRoomController {
 		}
 		
 		private void redirectOutput() {
-			  OutputStream outPut = new OutputStream() {
-			    @Override
+			OutputStream outPut = new OutputStream() {
+				@Override
 			    public void write(final int byteString) throws IOException {
-			      view.newMessage(String.valueOf((char) byteString));
+					view.newMessage(String.valueOf((char) byteString));
 			    }
 			 
 			    @Override
 			    public void write(byte[] byteString, int off, int len) throws IOException {
-			      view.newMessage(new String(byteString, off, len));
+			    	view.newMessage(new String(byteString, off, len));
 			    }
 			 
 			    @Override
 			    public void write(byte[] byteString) throws IOException {
-			      write(byteString, 0, byteString.length);
+			    	write(byteString, 0, byteString.length);
 			    }
 			  };
 			  System.setOut(new PrintStream(outPut, true));
 			  System.setErr(new PrintStream(outPut, true));
 		}
+		
 		public void setInfo(String hostName, int portNumber, String name) {
 			host = hostName;
 			port = portNumber;
 			username = name;
-		}
-		public void setInfo(String file) {
-			fileName = file;
 		}
 		
 		public void closeServer() {

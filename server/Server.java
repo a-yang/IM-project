@@ -9,7 +9,6 @@ public class Server {
 	public ServerSocket serverSocket;
 	public ArrayList<Socket> clientSockets;
 	public ArrayList<byte []> messageHistoryQueue;
-	public ArrayList<byte []> photoQueue;
 	Socket newClient;
 	
 	public Server(final Integer portNumber) throws IOException
@@ -20,7 +19,6 @@ public class Server {
 				serverSocket = new ServerSocket(portNumber);
 				clientSockets = new ArrayList<Socket>();
 				messageHistoryQueue = new ArrayList<byte []>();
-				photoQueue = new ArrayList<byte []>();
 				
 				runChatRoom();
 				} catch (IOException e) {
@@ -49,7 +47,7 @@ public class Server {
 		for (int i = 0; i < clientSockets.size(); i++) {
 			BufferedReader in = new BufferedReader(
 	                new InputStreamReader(clientSockets.get(i).getInputStream()));
-			new PrintWriter(clientSockets.get(i).getOutputStream(), true).println("Host has left.");
+			new PrintWriter(clientSockets.get(i).getOutputStream(), true).println("Host has ended this chatroom.");
 		}
 		} catch (IOException e) {
 			e.printStackTrace();
