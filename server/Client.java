@@ -2,10 +2,12 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 
 public class Client {
 	public Socket clientSocket;
 	String userName;
+	int numPhotos = 1;
 	
 	public Client(String hostName, Integer portNumber, String userName)
 	{
@@ -27,59 +29,55 @@ public class Client {
 	public void runChat()
 	{
 
-    		try (
-    				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(
-                    		new InputStreamReader(clientSocket.getInputStream()));
+		try (
+				OutputStream out = (OutputStream) clientSocket.getOutputStream();
+                InputStream in = (InputStream) clientSocket.getInputStream();
+				) {
+    				String intro = userName + " joined the chat.";
+    				out.write(intro.getBytes());
+    				String userInput;
+    				while (true) {
 
-                ) {
-    				out.println(userName + " joined the chat.");
-                    String userInput;
-                    while (true) {
-
-                    	
-                    	if (in.ready()) {
-                    		
-                    		String inputLine = in.readLine();
-    						/*Boolean firstLine = true;
-    						Boolean isImage = false;
-    						while (in.ready()) {
-    							if (!firstLine && !isImage) {
-    								inputLine += "\n";
-    							}
-    							inputLine += in.readLine();
-    							if (firstLine) {
-    								byte bytes[] = inputLine.getBytes();
-    								if (bytes[0] == 0xEF && bytes[1] == 0xBF) {
-    									isImage = true;
-    								}
-    							}
-    							firstLine = false;
-
-    						}
-    						byte bytes[] = inputLine.getBytes();
-    						System.out.println("first 4 bytes");
-    						for (int i = 0;i < 4; i++) {
-    							System.out.println(bytes[i] & 0xff);
-    						}*/
-                            System.out.println(inputLine);
-                    	}
+						if (in.available() != 0) {
+							byte[] bytes = new byte[1000000];
+							int count = in.read(bytes);
+							final byte data [] = Arrays.copyOfRange(bytes, 0, count);
+						
+							if ((data[0] & 0xff) == 255 && (data[1] & 0xff) == 216) {
+								new Thread(new Runnable() {
+									public void run() {
+										try {
+		    	    					FileOutputStream fileOut= new FileOutputStream("image" + numPhotos + ".jpg");
+		    	    					fileOut.write(data);
+		    	    					System.out.println("saved image " + "image" + numPhotos + ".jpg");
+		    	    					numPhotos++;
+										} catch (FileNotFoundException e) {
+											e.printStackTrace();
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+									}
+								}).start();
+		
+							}
+							else {
+								String message = new String(data);
+								System.out.println(message);
+							}
+    					}
+                    
                     	if (System.in.available() != 0){
                         	ByteArrayOutputStream o = new ByteArrayOutputStream();
                         	while (System.in.available() != 0) {
                         		o.write(System.in.read());
                         	}
                         	byte b[] = o.toByteArray();
+                        	String message = userName + ": ";
                     		String byteArray = new String(b);
-                        	/*if (out.checkError()){
-                        		System.out.println("Host has left.");
-                        		break;
-                        	}*/
-                    		out.println(userName + ": " + byteArray);
+                    		message += byteArray;
+                    		out.write(message.getBytes());
 
                     	}
-                    	
-
 
                     }
                 } catch (UnknownHostException e) {
@@ -95,18 +93,25 @@ public class Client {
 		try {
 	        File f=new File(fileName); 
 			if(f.exists()) { 
-		            BufferedInputStream d=new BufferedInputStream(new FileInputStream(fileName));
-		            BufferedOutputStream outStream = new BufferedOutputStream(clientSocket.getOutputStream());
-		            byte buffer[] = new byte[(int) f.length()];
-		            int read;
-		            String intro = userName + " sent " + fileName + ": \n";
-		            outStream.write(intro.getBytes());
-		            outStream.flush();
-		            while((read = d.read(buffer))!=-1)
-		            {
-		                outStream.write(buffer, 0, read);
-		                outStream.flush();
-		            }
+				BufferedInputStream d=new BufferedInputStream(new FileInputStream(fileName));
+				OutputStream out = (OutputStream) clientSocket.getOutputStream();
+
+				int length = (int) f.length();
+			    byte[] file = new byte[length];
+			    int offset = 0;
+			    while (offset < length) {
+			        int count = d.read(file, offset, (length - offset));
+			        offset += length;
+			    }
+			    
+			    if ((file[0] & 0xff) != 255 && (file[1] & 0xff) != 216){
+				    String message = userName + " sent " + fileName + "\n";
+				    out.write(message.getBytes());
+				    out.flush();
+			    }
+				out.write(file);
+				out.flush();
+	
 			}
 	        
 		} catch (FileNotFoundException e) {
