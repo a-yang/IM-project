@@ -38,11 +38,12 @@ public class SocketThread extends Thread{
 						while (lastMessageSent < server.messageHistoryQueue.size())
 						{
 							byte message[] = server.messageHistoryQueue.get(lastMessageSent);
+							lastMessageSent++;
 							
 							OutputStream out = (OutputStream) socket.getOutputStream();
+							System.out.println("writing a message");
 							out.write(message);
 							out.flush();
-							lastMessageSent++;
 						} //end while
 					} //end synchronized
 				} //end if

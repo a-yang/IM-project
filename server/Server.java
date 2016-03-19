@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Server {
 	public ServerSocket serverSocket;
 	public ArrayList<Socket> clientSockets;
-	public ArrayList<byte []> messageHistoryQueue;
+	public final ArrayList<byte []> messageHistoryQueue = new ArrayList<byte []>();
 	Socket newClient;
 	
 	public Server(final Integer portNumber) throws IOException
@@ -18,7 +18,6 @@ public class Server {
 				try {
 				serverSocket = new ServerSocket(portNumber);
 				clientSockets = new ArrayList<Socket>();
-				messageHistoryQueue = new ArrayList<byte []>();
 				
 				runChatRoom();
 				} catch (IOException e) {
