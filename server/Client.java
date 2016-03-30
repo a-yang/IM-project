@@ -37,7 +37,7 @@ public class Client {
 			String userInput;
 			while (true) {
 				if (in.available() != 0) {
-					byte[] bytes = new byte[1000000];
+					byte[] bytes = new byte[10000000];
 					int count = in.read(bytes);
 					final byte data [] = Arrays.copyOfRange(bytes, 0, count);
 				

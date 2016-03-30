@@ -26,7 +26,7 @@ public class SocketThread extends Thread{
 				InputStream in = socket.getInputStream();
 				byte file [];
 				if (in.available() != 0) {
-					byte[] data = new byte[1000000];
+					byte[] data = new byte[10000000];
 					int count = in.read(data);
 					file = Arrays.copyOfRange(data, 0, count);    					
 					server.messageHistoryQueue.add(file);
@@ -41,7 +41,6 @@ public class SocketThread extends Thread{
 							lastMessageSent++;
 							
 							OutputStream out = (OutputStream) socket.getOutputStream();
-							System.out.println("writing a message");
 							out.write(message);
 							out.flush();
 						} //end while
